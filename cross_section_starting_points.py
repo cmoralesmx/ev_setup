@@ -70,8 +70,8 @@ def identify_source_points(vertices, use_internal_normal=True):
         p1 = (vertices[i][0], vertices[i][1])
         p2 = (vertices[i+1][0], vertices[i+1][1])
 
-        source_points.append({'p': geo.middlePoint(p1, p2), 'normal': geo.unitVector2p(
-            geo.twoPointsNormal(p1, p2, use_internal_normal))})
+        source_points.append({'p': geo.middle_point(p1, p2), 'normal': geo.unit_vector_2p(
+            geo.two_points_normal(p1, p2, use_internal_normal))})
     return source_points
 
 
@@ -93,6 +93,9 @@ def cells_in_section(section_vertices, cell_width_mean, cell_width_variance=0.00
     limit = len(section_vertices)
     for i in range(1, limit):
         distance_between_vertices = geo.distance(section_vertices[i-1], section_vertices[i])
+        # compute the number of cells to generate
+        n_cells = distance_between_vertices / cell_width_mean
+    # then check the segment between the last and the first vertices
 
     return cells
 
@@ -115,6 +118,8 @@ def generate_cells(vertices, invert_orientation, secretory_cell_probability=0.5,
     coordinates = []
     # As previously stated, contours 12 & 14 lay within contour 11, their normals must point in the other direction
     for i in range(len(vertices)):
+        # previously, we were identifying the source points directly
+        # now, we need to compute how many
         if i in invert_orientation:
             source_points = identify_source_points(vertices[i], False)
             cells = cells_in_section(vertices[i], cell_width, oriented_towards_centre=False,
